@@ -236,52 +236,79 @@
     move-result v1
 
     invoke-virtual {v0, v1}, Landroid/app/NotificationManager;->cancel(I)V
-
     return-void
 .end method
-
 .method private static updatePlaybackState(Landroid/media/session/MediaSession;JJ)V
     .locals 9
     .param p0, "session"    # Landroid/media/session/MediaSession;
     .param p1, "deadlineMs"    # J
     .param p3, "totalMs"    # J
-
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
-
     move-result-wide v0
-
     sub-long v2, p1, v0
-
     sub-long v2, p3, v2
-
     new-instance v4, Landroid/media/session/PlaybackState$Builder;
-
     invoke-direct {v4}, Landroid/media/session/PlaybackState$Builder;-><init>()V
-
     const/4 v5, 0x3
-
     const/high16 v6, 0x3f800000    # 1.0f
-
     invoke-virtual {v4, v5, v2, v3, v6}, Landroid/media/session/PlaybackState$Builder;->setState(IJF)Landroid/media/session/PlaybackState$Builder;
-
     move-result-object v4
-
     const-wide/16 v6, 0x76
-
     invoke-virtual {v4, v6, v7}, Landroid/media/session/PlaybackState$Builder;->setActions(J)Landroid/media/session/PlaybackState$Builder;
-
     move-result-object v4
-
     invoke-virtual {v4}, Landroid/media/session/PlaybackState$Builder;->build()Landroid/media/session/PlaybackState;
-
     move-result-object v4
-
     invoke-virtual {p0, v4}, Landroid/media/session/MediaSession;->setPlaybackState(Landroid/media/session/PlaybackState;)V
-
     return-void
 .end method
 
+.method public static updatePlaybackState2(Landroid/media/session/MediaSession;JJZ)V
+    .locals 9
+    .param p0, "session"    # Landroid/media/session/MediaSession;
+    .param p1, "deadlineMs"    # J
+    .param p3, "totalMs"    # J
+    .param p5, "paused"    # Z
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v0
+    sub-long v2, p1, v0
+    sub-long v2, p3, v2
+    new-instance v4, Landroid/media/session/PlaybackState$Builder;
+    invoke-direct {v4}, Landroid/media/session/PlaybackState$Builder;-><init>()V
+    if-eqz p5, :cond_playing
+    const/4 v5, 0x2
+    const/4 v6, 0x0
+    goto :goto_0
+    :cond_playing
+    const/4 v5, 0x3
+    const/high16 v6, 0x3f800000    # 1.0f
 
+:goto_0
+    invoke-virtual {v4, v5, v2, v3, v6}, Landroid/media/session/PlaybackState$Builder;->setState(IJF)Landroid/media/session/PlaybackState$Builder;
+    move-result-object v4
+    const-wide/16 v6, 0x76
+    invoke-virtual {v4, v6, v7}, Landroid/media/session/PlaybackState$Builder;->setActions(J)Landroid/media/session/PlaybackState$Builder;
+
+    move-result-object v4
+    invoke-virtual {v4}, Landroid/media/session/PlaybackState$Builder;->build()Landroid/media/session/PlaybackState;
+    move-result-object v4
+invoke-virtual {p0, v4}, Landroid/media/session/MediaSession;->setPlaybackState(Landroid/media/session/PlaybackState;)V
+    return-void
+.end method
+
+.method public static setCountdownState(JJZ)V
+    .locals 4
+    .param p0, "deadlineMs"    # J
+    .param p2, "totalMs"    # J
+    .param p4, "paused"    # Z
+    sget-object v0, Lcom/screenshotclean/app/Notifier;->sMediaSession:Landroid/media/session/MediaSession;
+    if-eqz v0, :cond_ret
+    move-wide v1, p0
+    move-wide v3, p2
+    move v5, p4
+    invoke-static/range {v0 .. v5}, Lcom/screenshotclean/app/Notifier;->updatePlaybackState2(Landroid/media/session/MediaSession;JJZ)V
+    :cond_ret
+    return-void
+.end method
 # virtual methods
 .method public cancel(Ljava/lang/String;)V
     .locals 2
@@ -1104,9 +1131,7 @@
     invoke-virtual {v7, v8}, Landroid/media/session/MediaSession;->setActive(Z)V
 
     move-wide/from16 v1, p3
-
     move-wide/from16 v5, p5
-
     invoke-static {v7, v1, v2, v5, v6}, Lcom/screenshotclean/app/Notifier;->updatePlaybackState(Landroid/media/session/MediaSession;JJ)V
 
     new-instance v8, Landroid/media/MediaMetadata$Builder;
