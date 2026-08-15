@@ -452,53 +452,101 @@
     :cond_2
     return-void
 .end method
-.method public addTime(Ljava/lang/String;J)V
+.method public pauseTask(Ljava/lang/String;)V
     .locals 12
     .param p1, "path"    # Ljava/lang/String;
-    .param p2, "extraMs"    # J
     iget-object v0, p0, Lcom/screenshotclean/app/DeleteManager;->tasks:Ljava/util/Map;
     invoke-interface {v0, p1}, Ljava/util/Map;->get(Ljava/lang/Object;)Ljava/lang/Object;
     move-result-object v0
     check-cast v0, Lcom/screenshotclean/app/DeleteManager$Task;
-    if-nez v0, :cond_ret
+    if-eqz v0, :cond_ret
+    iget-boolean v1, v0, Lcom/screenshotclean/app/DeleteManager$Task;->paused:Z
+    if-nez v1, :cond_ret
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
     move-result-wide v1
     iget-wide v3, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deadline:J
-    add-long/2addr v3, p2
-    iput-wide v3, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deadline:J
-    iget-wide v3, v0, Lcom/screenshotclean/app/DeleteManager$Task;->total:J
-    add-long/2addr v3, p2
-    iput-wide v3, v0, Lcom/screenshotclean/app/DeleteManager$Task;->total:J
-    iget-object v5, p0, Lcom/screenshotclean/app/DeleteManager;->handler:Landroid/os/Handler;
-    iget-object v6, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deleteRunnable:Ljava/lang/Runnable;
-    invoke-virtual {v5, v6}, Landroid/os/Handler;->removeCallbacks(Ljava/lang/Runnable;)V
-    iget-wide v3, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deadline:J
-    sub-long v8, v3, v1
-    iget-object v5, p0, Lcom/screenshotclean/app/DeleteManager;->handler:Landroid/os/Handler;
-    iget-object v6, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deleteRunnable:Ljava/lang/Runnable;
-    invoke-virtual {v5, v6, v8, v9}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
+    sub-long v3, v3, v1
+    iput-wide v3, v0, Lcom/screenshotclean/app/DeleteManager$Task;->remainingMs:J
+    const/4 v1, 0x1
+    iput-boolean v1, v0, Lcom/screenshotclean/app/DeleteManager$Task;->paused:Z
+    iget-object v1, p0, Lcom/screenshotclean/app/DeleteManager;->handler:Landroid/os/Handler;
+    iget-object v2, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deleteRunnable:Ljava/lang/Runnable;
+    invoke-virtual {v1, v2}, Landroid/os/Handler;->removeCallbacks(Ljava/lang/Runnable;)V
     iget-object v4, p0, Lcom/screenshotclean/app/DeleteManager;->notifier:Lcom/screenshotclean/app/Notifier;
     iget-object v5, v0, Lcom/screenshotclean/app/DeleteManager$Task;->path:Ljava/lang/String;
     iget-object v6, v0, Lcom/screenshotclean/app/DeleteManager$Task;->name:Ljava/lang/String;
     iget-wide v7, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deadline:J
     iget-wide v9, v0, Lcom/screenshotclean/app/DeleteManager$Task;->total:J
     invoke-virtual/range {v4 .. v10}, Lcom/screenshotclean/app/Notifier;->showCountdown(Ljava/lang/String;Ljava/lang/String;JJ)V
-    new-instance v5, Ljava/lang/StringBuilder;
-    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
-    const-string v6, "\u5df2\u5ef6\u957f1\u5206\u949f\uff0c\u5269\u4f59 "
-    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    iget-wide v8, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deadline:J
-    sub-long v3, v8, v1
+    iget-wide v1, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deadline:J
+    iget-wide v3, v0, Lcom/screenshotclean/app/DeleteManager$Task;->total:J
+    const/4 v5, 0x1
+    invoke-static {v1, v2, v3, v4, v5}, Lcom/screenshotclean/app/Notifier;->setCountdownState(JJZ)V
+    new-instance v1, Ljava/lang/StringBuilder;
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v2, "\u5df2\u6682\u505c\uff0c\u5269\u4f59 "
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    iget-wide v3, v0, Lcom/screenshotclean/app/DeleteManager$Task;->remainingMs:J
+    const-wide/16 v5, 0x3e8
+    div-long/2addr v3, v5
     invoke-static {v3, v4}, Lcom/screenshotclean/app/Notifier;->format(J)Ljava/lang/String;
-    move-result-object v6
-    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-    move-result-object v6
-    iget-object v7, p0, Lcom/screenshotclean/app/DeleteManager;->ctx:Landroid/content/Context;
-    const/4 v8, 0x0
-    invoke-static {v7, v6, v8}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
-    move-result-object v7
-    invoke-virtual {v7}, Landroid/widget/Toast;->show()V
+    move-result-object v2
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v2
+    iget-object v3, p0, Lcom/screenshotclean/app/DeleteManager;->ctx:Landroid/content/Context;
+    const/4 v4, 0x0
+    invoke-static {v3, v2, v4}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
+    move-result-object v3
+    invoke-virtual {v3}, Landroid/widget/Toast;->show()V
+    :cond_ret
+    return-void
+.end method
+
+.method public resumeTask(Ljava/lang/String;)V
+    .locals 12
+    .param p1, "path"    # Ljava/lang/String;
+    iget-object v0, p0, Lcom/screenshotclean/app/DeleteManager;->tasks:Ljava/util/Map;
+    invoke-interface {v0, p1}, Ljava/util/Map;->get(Ljava/lang/Object;)Ljava/lang/Object;
+    move-result-object v0
+    check-cast v0, Lcom/screenshotclean/app/DeleteManager$Task;
+    if-eqz v0, :cond_ret
+    iget-boolean v1, v0, Lcom/screenshotclean/app/DeleteManager$Task;->paused:Z
+    if-eqz v1, :cond_ret
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v1
+    iget-wide v3, v0, Lcom/screenshotclean/app/DeleteManager$Task;->remainingMs:J
+    add-long/2addr v1, v3
+    iput-wide v1, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deadline:J
+    const/4 v1, 0x0
+    iput-boolean v1, v0, Lcom/screenshotclean/app/DeleteManager$Task;->paused:Z
+    iget-wide v1, v0, Lcom/screenshotclean/app/DeleteManager$Task;->remainingMs:J
+    iget-object v3, p0, Lcom/screenshotclean/app/DeleteManager;->handler:Landroid/os/Handler;
+    iget-object v4, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deleteRunnable:Ljava/lang/Runnable;
+    invoke-virtual {v3, v4, v1, v2}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
+    iget-object v4, p0, Lcom/screenshotclean/app/DeleteManager;->notifier:Lcom/screenshotclean/app/Notifier;
+    iget-object v5, v0, Lcom/screenshotclean/app/DeleteManager$Task;->path:Ljava/lang/String;
+    iget-object v6, v0, Lcom/screenshotclean/app/DeleteManager$Task;->name:Ljava/lang/String;
+    iget-wide v7, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deadline:J
+    iget-wide v9, v0, Lcom/screenshotclean/app/DeleteManager$Task;->total:J
+    invoke-virtual/range {v4 .. v10}, Lcom/screenshotclean/app/Notifier;->showCountdown(Ljava/lang/String;Ljava/lang/String;JJ)V
+    new-instance v1, Ljava/lang/StringBuilder;
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v2, "\u5df2\u7ee7\u7eed\uff0c\u5269\u4f59 "
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    iget-wide v3, v0, Lcom/screenshotclean/app/DeleteManager$Task;->remainingMs:J
+    const-wide/16 v5, 0x3e8
+    div-long/2addr v3, v5
+    invoke-static {v3, v4}, Lcom/screenshotclean/app/Notifier;->format(J)Ljava/lang/String;
+    move-result-object v2
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v2
+    iget-object v3, p0, Lcom/screenshotclean/app/DeleteManager;->ctx:Landroid/content/Context;
+    const/4 v4, 0x0
+    invoke-static {v3, v2, v4}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
+    move-result-object v3
+    invoke-virtual {v3}, Landroid/widget/Toast;->show()V
     :cond_ret
     return-void
 .end method
