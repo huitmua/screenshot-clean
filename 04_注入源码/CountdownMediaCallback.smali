@@ -110,26 +110,24 @@
     return-void
 .end method
 .method public onPlay()V
-    .locals 4
+    .locals 2
     sget-object v0, Lcom/screenshotclean/app/CountdownMediaCallback;->sPath:Ljava/lang/String;
     if-eqz v0, :cond_0
     iget-object v1, p0, Lcom/screenshotclean/app/CountdownMediaCallback;->ctx:Landroid/content/Context;
     invoke-static {v1}, Lcom/screenshotclean/app/DeleteManager;->get(Landroid/content/Context;)Lcom/screenshotclean/app/DeleteManager;
     move-result-object v1
-    const-wide/16 v2, 0xea60
-    invoke-virtual {v1, v0, v2, v3}, Lcom/screenshotclean/app/DeleteManager;->addTime(Ljava/lang/String;J)V
+    invoke-virtual {v1, v0}, Lcom/screenshotclean/app/DeleteManager;->resumeTask(Ljava/lang/String;)V
     :cond_0
     return-void
 .end method
 .method public onPause()V
-    .locals 4
+    .locals 2
     sget-object v0, Lcom/screenshotclean/app/CountdownMediaCallback;->sPath:Ljava/lang/String;
     if-eqz v0, :cond_0
     iget-object v1, p0, Lcom/screenshotclean/app/CountdownMediaCallback;->ctx:Landroid/content/Context;
     invoke-static {v1}, Lcom/screenshotclean/app/DeleteManager;->get(Landroid/content/Context;)Lcom/screenshotclean/app/DeleteManager;
     move-result-object v1
-    const-wide/16 v2, 0xea60
-    invoke-virtual {v1, v0, v2, v3}, Lcom/screenshotclean/app/DeleteManager;->addTime(Ljava/lang/String;J)V
+    invoke-virtual {v1, v0}, Lcom/screenshotclean/app/DeleteManager;->pauseTask(Ljava/lang/String;)V
     :cond_0
     return-void
 .end method
