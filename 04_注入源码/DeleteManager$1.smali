@@ -158,19 +158,15 @@
 
     :goto_1
     invoke-interface {v2}, Ljava/util/Iterator;->hasNext()Z
-
     move-result v3
-
     if-eqz v3, :cond_3
-
     invoke-interface {v2}, Ljava/util/Iterator;->next()Ljava/lang/Object;
-
     move-result-object v3
-
     check-cast v3, Lcom/screenshotclean/app/DeleteManager$Task;
-
     .line 45
     .local v3, "t":Lcom/screenshotclean/app/DeleteManager$Task;
+    iget-boolean v4, v3, Lcom/screenshotclean/app/DeleteManager$Task;->paused:Z
+    if-nez v4, :goto_1
     iget-object v4, p0, Lcom/screenshotclean/app/DeleteManager$1;->this$0:Lcom/screenshotclean/app/DeleteManager;
 
     invoke-static {v4}, Lcom/screenshotclean/app/DeleteManager;->-$$Nest$fgetnotifier(Lcom/screenshotclean/app/DeleteManager;)Lcom/screenshotclean/app/Notifier;
