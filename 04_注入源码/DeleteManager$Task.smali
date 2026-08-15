@@ -18,12 +18,12 @@
 .field deadline:J
 
 .field final deleteRunnable:Ljava/lang/Runnable;
-
 .field final name:Ljava/lang/String;
-
 .field final path:Ljava/lang/String;
-
+.field paused:Z
+.field remainingMs:J
 .field final synthetic this$0:Lcom/screenshotclean/app/DeleteManager;
+.field total:J
 
 .field total:J
 
