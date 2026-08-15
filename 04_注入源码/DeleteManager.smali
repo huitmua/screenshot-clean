@@ -24,6 +24,12 @@
 
 .field private final notifier:Lcom/screenshotclean/app/Notifier;
 
+.field private pendingDelay:J
+
+.field private pendingName:Ljava/lang/String;
+
+.field private pendingPath:Ljava/lang/String;
+
 .field private final tasks:Ljava/util/Map;
     .annotation system Ldalvik/annotation/Signature;
         value = {
@@ -36,15 +42,11 @@
 .end field
 
 .field private final ticker:Ljava/lang/Runnable;
-# v2.7: 排队机制 - 等待中的任务（前一个倒计时未完成时暂存）
-.field private pendingPath:Ljava/lang/String;
-.field private pendingName:Ljava/lang/String;
-.field private pendingDelay:J
 
 
 # direct methods
 .method static bridge synthetic -$$Nest$fgethandler(Lcom/screenshotclean/app/DeleteManager;)Landroid/os/Handler;
-    .registers 1
+    .locals 0
 
     iget-object p0, p0, Lcom/screenshotclean/app/DeleteManager;->handler:Landroid/os/Handler;
 
@@ -52,7 +54,7 @@
 .end method
 
 .method static bridge synthetic -$$Nest$fgetnotifier(Lcom/screenshotclean/app/DeleteManager;)Lcom/screenshotclean/app/Notifier;
-    .registers 1
+    .locals 0
 
     iget-object p0, p0, Lcom/screenshotclean/app/DeleteManager;->notifier:Lcom/screenshotclean/app/Notifier;
 
@@ -60,7 +62,7 @@
 .end method
 
 .method static bridge synthetic -$$Nest$fgettasks(Lcom/screenshotclean/app/DeleteManager;)Ljava/util/Map;
-    .registers 1
+    .locals 0
 
     iget-object p0, p0, Lcom/screenshotclean/app/DeleteManager;->tasks:Ljava/util/Map;
 
@@ -68,7 +70,7 @@
 .end method
 
 .method static bridge synthetic -$$Nest$mexecuteDelete(Lcom/screenshotclean/app/DeleteManager;Lcom/screenshotclean/app/DeleteManager$Task;)V
-    .registers 2
+    .locals 0
 
     invoke-direct {p0, p1}, Lcom/screenshotclean/app/DeleteManager;->executeDelete(Lcom/screenshotclean/app/DeleteManager$Task;)V
 
@@ -76,7 +78,7 @@
 .end method
 
 .method private constructor <init>(Landroid/content/Context;)V
-    .registers 4
+    .locals 2
     .param p1, "c"    # Landroid/content/Context;
 
     .line 73
@@ -128,7 +130,7 @@
 .end method
 
 .method private executeDelete(Lcom/screenshotclean/app/DeleteManager$Task;)V
-    .registers 10
+    .locals 8
     .param p1, "t"    # Lcom/screenshotclean/app/DeleteManager$Task;
 
     .line 117
@@ -145,7 +147,7 @@
 
     move-result v0
 
-    if-eqz v0, :cond_16
+    if-eqz v0, :cond_0
 
     iget-object v0, p0, Lcom/screenshotclean/app/DeleteManager;->handler:Landroid/os/Handler;
 
@@ -154,12 +156,12 @@
     invoke-virtual {v0, v1}, Landroid/os/Handler;->removeCallbacks(Ljava/lang/Runnable;)V
 
     .line 120
-    :cond_16
+    :cond_0
     const/4 v0, 0x0
 
     .line 125
     .local v0, "ok":Z
-    :try_start_17
+    :try_start_0
     iget-object v1, p0, Lcom/screenshotclean/app/DeleteManager;->ctx:Landroid/content/Context;
 
     invoke-virtual {v1}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
@@ -183,27 +185,27 @@
     invoke-virtual {v1, v2, v3, v5}, Landroid/content/ContentResolver;->delete(Landroid/net/Uri;Ljava/lang/String;[Ljava/lang/String;)I
 
     move-result v1
-    :try_end_2d
-    .catch Ljava/lang/Exception; {:try_start_17 .. :try_end_2d} :catch_33
+    :try_end_0
+    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
 
     .line 129
     .local v1, "rows":I
-    if-lez v1, :cond_30
+    if-lez v1, :cond_1
 
-    goto :goto_31
+    goto :goto_0
 
-    :cond_30
+    :cond_1
     move v4, v7
 
-    :goto_31
+    :goto_0
     move v0, v4
 
     .line 132
     .end local v1    # "rows":I
-    goto :goto_35
+    goto :goto_1
 
     .line 130
-    :catch_33
+    :catch_0
     move-exception v1
 
     .line 131
@@ -212,11 +214,11 @@
 
     .line 135
     .end local v1    # "e":Ljava/lang/Exception;
-    :goto_35
-    if-nez v0, :cond_4c
+    :goto_1
+    if-nez v0, :cond_3
 
     .line 137
-    :try_start_37
+    :try_start_1
     new-instance v1, Ljava/io/File;
 
     iget-object v2, p1, Lcom/screenshotclean/app/DeleteManager$Task;->path:Ljava/lang/String;
@@ -229,24 +231,24 @@
 
     move-result v2
 
-    if-eqz v2, :cond_49
+    if-eqz v2, :cond_2
 
     .line 139
     invoke-virtual {v1}, Ljava/io/File;->delete()Z
 
     move-result v2
-    :try_end_48
-    .catch Ljava/lang/Exception; {:try_start_37 .. :try_end_48} :catch_4a
+    :try_end_1
+    .catch Ljava/lang/Exception; {:try_start_1 .. :try_end_1} :catch_1
 
     move v0, v2
 
     .line 143
     .end local v1    # "f":Ljava/io/File;
-    :cond_49
-    goto :goto_4c
+    :cond_2
+    goto :goto_2
 
     .line 141
-    :catch_4a
+    :catch_1
     move-exception v1
 
     .line 142
@@ -255,9 +257,9 @@
 
     .line 146
     .end local v1    # "e":Ljava/lang/Exception;
-    :cond_4c
-    :goto_4c
-    if-eqz v0, :cond_58
+    :cond_3
+    :goto_2
+    if-eqz v0, :cond_4
 
     .line 147
     iget-object v1, p0, Lcom/screenshotclean/app/DeleteManager;->notifier:Lcom/screenshotclean/app/Notifier;
@@ -268,10 +270,10 @@
 
     invoke-virtual {v1, v2, v3}, Lcom/screenshotclean/app/Notifier;->showDeleted(Ljava/lang/String;Ljava/lang/String;)V
 
-    goto :goto_61
+    goto :goto_3
 
     .line 149
-    :cond_58
+    :cond_4
     iget-object v1, p0, Lcom/screenshotclean/app/DeleteManager;->notifier:Lcom/screenshotclean/app/Notifier;
 
     iget-object v2, p1, Lcom/screenshotclean/app/DeleteManager$Task;->path:Ljava/lang/String;
@@ -279,31 +281,43 @@
     iget-object v3, p1, Lcom/screenshotclean/app/DeleteManager$Task;->name:Ljava/lang/String;
 
     invoke-virtual {v1, v2, v3}, Lcom/screenshotclean/app/Notifier;->showFailed(Ljava/lang/String;Ljava/lang/String;)V
-    # v2.7: 删除失败气泡
+
     iget-object v1, p0, Lcom/screenshotclean/app/DeleteManager;->ctx:Landroid/content/Context;
-    const-string v2, "删除失败"
+
+    const-string v2, "\u5220\u9664\u5931\u8d25"
+
     const/4 v3, 0x0
+
     invoke-static {v1, v2, v3}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
+
     move-result-object v1
+
     invoke-virtual {v1}, Landroid/widget/Toast;->show()V
 
     .line 151
-    :goto_61
-    # v2.7: 前一个任务完成 -> 启动排队中的任务
+    :goto_3
     iget-object v1, p0, Lcom/screenshotclean/app/DeleteManager;->pendingPath:Ljava/lang/String;
-    if-eqz v1, :cond_nopending
+
+    if-eqz v1, :cond_5
+
     iget-object v2, p0, Lcom/screenshotclean/app/DeleteManager;->pendingName:Ljava/lang/String;
+
     iget-wide v3, p0, Lcom/screenshotclean/app/DeleteManager;->pendingDelay:J
+
     const/4 v5, 0x0
+
     iput-object v5, p0, Lcom/screenshotclean/app/DeleteManager;->pendingPath:Ljava/lang/String;
+
     iput-object v5, p0, Lcom/screenshotclean/app/DeleteManager;->pendingName:Ljava/lang/String;
+
     invoke-virtual {p0, v1, v2, v3, v4}, Lcom/screenshotclean/app/DeleteManager;->schedule(Ljava/lang/String;Ljava/lang/String;J)V
-    :cond_nopending
+
+    :cond_5
     return-void
 .end method
 
 .method public static declared-synchronized get(Landroid/content/Context;)Lcom/screenshotclean/app/DeleteManager;
-    .registers 3
+    .locals 2
     .param p0, "c"    # Landroid/content/Context;
 
     const-class v0, Lcom/screenshotclean/app/DeleteManager;
@@ -311,10 +325,10 @@
     monitor-enter v0
 
     .line 79
-    :try_start_3
+    :try_start_0
     sget-object v1, Lcom/screenshotclean/app/DeleteManager;->instance:Lcom/screenshotclean/app/DeleteManager;
 
-    if-nez v1, :cond_e
+    if-nez v1, :cond_0
 
     new-instance v1, Lcom/screenshotclean/app/DeleteManager;
 
@@ -323,10 +337,10 @@
     sput-object v1, Lcom/screenshotclean/app/DeleteManager;->instance:Lcom/screenshotclean/app/DeleteManager;
 
     .line 80
-    :cond_e
+    :cond_0
     sget-object v1, Lcom/screenshotclean/app/DeleteManager;->instance:Lcom/screenshotclean/app/DeleteManager;
-    :try_end_10
-    .catchall {:try_start_3 .. :try_end_10} :catchall_12
+    :try_end_0
+    .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
     monitor-exit v0
 
@@ -334,7 +348,7 @@
 
     .line 78
     .end local p0    # "c":Landroid/content/Context;
-    :catchall_12
+    :catchall_0
     move-exception p0
 
     monitor-exit v0
@@ -345,7 +359,7 @@
 
 # virtual methods
 .method public activeCount()I
-    .registers 2
+    .locals 1
 
     .line 88
     iget-object v0, p0, Lcom/screenshotclean/app/DeleteManager;->tasks:Ljava/util/Map;
@@ -358,13 +372,13 @@
 .end method
 
 .method public cancel(Ljava/lang/String;)V
-    .registers 10
+    .locals 8
     .param p1, "path"    # Ljava/lang/String;
 
     .line 108
-    iget-object v0, v8, Lcom/screenshotclean/app/DeleteManager;->tasks:Ljava/util/Map;
+    iget-object v0, p0, Lcom/screenshotclean/app/DeleteManager;->tasks:Ljava/util/Map;
 
-    invoke-interface {v0, v9}, Ljava/util/Map;->remove(Ljava/lang/Object;)Ljava/lang/Object;
+    invoke-interface {v0, p1}, Ljava/util/Map;->remove(Ljava/lang/Object;)Ljava/lang/Object;
 
     move-result-object v0
 
@@ -372,174 +386,314 @@
 
     .line 109
     .local v0, "t":Lcom/screenshotclean/app/DeleteManager$Task;
-    if-nez v0, :cond_b
+    if-nez v0, :cond_0
 
     return-void
 
     .line 110
-    :cond_b
-    iget-object v1, v8, Lcom/screenshotclean/app/DeleteManager;->handler:Landroid/os/Handler;
+    :cond_0
+    iget-object v1, p0, Lcom/screenshotclean/app/DeleteManager;->handler:Landroid/os/Handler;
 
     iget-object v2, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deleteRunnable:Ljava/lang/Runnable;
 
     invoke-virtual {v1, v2}, Landroid/os/Handler;->removeCallbacks(Ljava/lang/Runnable;)V
 
     .line 111
-    iget-object v1, v8, Lcom/screenshotclean/app/DeleteManager;->notifier:Lcom/screenshotclean/app/Notifier;
+    iget-object v1, p0, Lcom/screenshotclean/app/DeleteManager;->notifier:Lcom/screenshotclean/app/Notifier;
 
     iget-object v2, v0, Lcom/screenshotclean/app/DeleteManager$Task;->name:Ljava/lang/String;
 
-    invoke-virtual {v1, v9, v2}, Lcom/screenshotclean/app/Notifier;->showCancelled(Ljava/lang/String;Ljava/lang/String;)V
+    invoke-virtual {v1, p1, v2}, Lcom/screenshotclean/app/Notifier;->showCancelled(Ljava/lang/String;Ljava/lang/String;)V
 
     .line 112
-    iget-object v1, v8, Lcom/screenshotclean/app/DeleteManager;->tasks:Ljava/util/Map;
+    iget-object v1, p0, Lcom/screenshotclean/app/DeleteManager;->tasks:Ljava/util/Map;
 
     invoke-interface {v1}, Ljava/util/Map;->isEmpty()Z
 
     move-result v1
 
-    if-eqz v1, :cond_28
+    if-eqz v1, :cond_1
 
-    iget-object v1, v8, Lcom/screenshotclean/app/DeleteManager;->handler:Landroid/os/Handler;
+    iget-object v1, p0, Lcom/screenshotclean/app/DeleteManager;->handler:Landroid/os/Handler;
 
-    iget-object v2, v8, Lcom/screenshotclean/app/DeleteManager;->ticker:Ljava/lang/Runnable;
+    iget-object v2, p0, Lcom/screenshotclean/app/DeleteManager;->ticker:Ljava/lang/Runnable;
 
     invoke-virtual {v1, v2}, Landroid/os/Handler;->removeCallbacks(Ljava/lang/Runnable;)V
 
     .line 113
-    :cond_28
-    # v2.7: 已保留气泡
-    iget-object v3, v8, Lcom/screenshotclean/app/DeleteManager;->ctx:Landroid/content/Context;
-    const-string v4, "已保留"
+    :cond_1
+    iget-object v3, p0, Lcom/screenshotclean/app/DeleteManager;->ctx:Landroid/content/Context;
+
+    const-string v4, "\u5df2\u4fdd\u7559"
+
     const/4 v5, 0x0
+
     invoke-static {v3, v4, v5}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
+
     move-result-object v3
+
     invoke-virtual {v3}, Landroid/widget/Toast;->show()V
-    # v2.7: 前一个任务完成 -> 启动排队中的任务
-    iget-object v3, v8, Lcom/screenshotclean/app/DeleteManager;->pendingPath:Ljava/lang/String;
-    if-eqz v3, :cond_nopending
-    iget-object v4, v8, Lcom/screenshotclean/app/DeleteManager;->pendingName:Ljava/lang/String;
-    iget-wide v5, v8, Lcom/screenshotclean/app/DeleteManager;->pendingDelay:J
+
+    iget-object v3, p0, Lcom/screenshotclean/app/DeleteManager;->pendingPath:Ljava/lang/String;
+
+    if-eqz v3, :cond_2
+
+    iget-object v4, p0, Lcom/screenshotclean/app/DeleteManager;->pendingName:Ljava/lang/String;
+
+    iget-wide v5, p0, Lcom/screenshotclean/app/DeleteManager;->pendingDelay:J
+
     const/4 v7, 0x0
-    iput-object v7, v8, Lcom/screenshotclean/app/DeleteManager;->pendingPath:Ljava/lang/String;
-    iput-object v7, v8, Lcom/screenshotclean/app/DeleteManager;->pendingName:Ljava/lang/String;
-    invoke-virtual {v8, v3, v4, v5, v6}, Lcom/screenshotclean/app/DeleteManager;->schedule(Ljava/lang/String;Ljava/lang/String;J)V
-    :cond_nopending
+
+    iput-object v7, p0, Lcom/screenshotclean/app/DeleteManager;->pendingPath:Ljava/lang/String;
+
+    iput-object v7, p0, Lcom/screenshotclean/app/DeleteManager;->pendingName:Ljava/lang/String;
+
+    invoke-virtual {p0, v3, v4, v5, v6}, Lcom/screenshotclean/app/DeleteManager;->schedule(Ljava/lang/String;Ljava/lang/String;J)V
+    :cond_2
     return-void
 .end method
-
-.method public deleteNow(Ljava/lang/String;)V
-    .registers 12
+.method public addTime(Ljava/lang/String;J)V
+    .locals 12
     .param p1, "path"    # Ljava/lang/String;
-    move-object/from16 v5, p0
-    move-object/from16 v8, p1
-    iget-object v0, v5, Lcom/screenshotclean/app/DeleteManager;->tasks:Ljava/util/Map;
-    invoke-interface {v0, v8}, Ljava/util/Map;->get(Ljava/lang/Object;)Ljava/lang/Object;
+    .param p2, "extraMs"    # J
+    iget-object v0, p0, Lcom/screenshotclean/app/DeleteManager;->tasks:Ljava/util/Map;
+    invoke-interface {v0, p1}, Ljava/util/Map;->get(Ljava/lang/Object;)Ljava/lang/Object;
     move-result-object v0
     check-cast v0, Lcom/screenshotclean/app/DeleteManager$Task;
-    const-string v9, "截图"
-    if-nez v0, :cond_b
-    goto :do_delete
-    :cond_b
-    iget-object v9, v0, Lcom/screenshotclean/app/DeleteManager$Task;->name:Ljava/lang/String;
-    iget-object v1, v5, Lcom/screenshotclean/app/DeleteManager;->handler:Landroid/os/Handler;
-    iget-object v2, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deleteRunnable:Ljava/lang/Runnable;
-    invoke-virtual {v1, v2}, Landroid/os/Handler;->removeCallbacks(Ljava/lang/Runnable;)V
-    iget-object v1, v5, Lcom/screenshotclean/app/DeleteManager;->tasks:Ljava/util/Map;
-    invoke-interface {v1, v8}, Ljava/util/Map;->remove(Ljava/lang/Object;)Ljava/lang/Object;
-    iget-object v1, v5, Lcom/screenshotclean/app/DeleteManager;->tasks:Ljava/util/Map;
-    invoke-interface {v1}, Ljava/util/Map;->isEmpty()Z
-    move-result v1
-    if-eqz v1, :cond_26
-    iget-object v1, v5, Lcom/screenshotclean/app/DeleteManager;->handler:Landroid/os/Handler;
-    iget-object v2, v5, Lcom/screenshotclean/app/DeleteManager;->ticker:Ljava/lang/Runnable;
-    invoke-virtual {v1, v2}, Landroid/os/Handler;->removeCallbacks(Ljava/lang/Runnable;)V
-    :cond_26
-    :do_delete
-    const/4 v1, 0x0
-    :try_start_27
-    iget-object v2, v5, Lcom/screenshotclean/app/DeleteManager;->ctx:Landroid/content/Context;
-    invoke-virtual {v2}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
-    move-result-object v2
-    sget-object v3, Landroid/provider/MediaStore$Images$Media;->EXTERNAL_CONTENT_URI:Landroid/net/Uri;
-    const-string v4, "_data=?"
-    const/4 v6, 0x1
-    new-array v6, v6, [Ljava/lang/String;
-    move-object v7, v8
-    const/4 v6, 0x0
-    aput-object v7, v6, v6
-    invoke-virtual {v2, v3, v4, v6}, Landroid/content/ContentResolver;->delete(Landroid/net/Uri;Ljava/lang/String;[Ljava/lang/String;)I
-    move-result v2
-    :try_end_3d
-    .catch Ljava/lang/Exception; {:try_start_27 .. :try_end_3d} :catch_41
-    nop
-    const/4 v1, 0x1
-    goto :goto_42
-    :catch_41
-    move-exception v2
-    const/4 v1, 0x1
-    :cond_42
-    :goto_42
-    nop
-    :try_start_44
-    new-instance v2, Ljava/io/File;
-    move-object v3, v8
-    invoke-direct {v2, v3}, Ljava/io/File;-><init>(Ljava/lang/String;)V
-    invoke-virtual {v2}, Ljava/io/File;->exists()Z
-    move-result v3
-    if-eqz v3, :cond_58
-    invoke-virtual {v2}, Ljava/io/File;->delete()Z
-    move-result v1
-    :try_end_55
-    .catch Ljava/lang/Exception; {:try_start_44 .. :try_end_55} :catch_56
-    goto :goto_58
-    :catch_56
-    move-exception v2
-    const/4 v1, 0x0
-    :cond_58
-    :goto_58
+    if-nez v0, :cond_ret
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+    move-result-wide v1
+    iget-wide v3, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deadline:J
+    add-long/2addr v3, p2
+    iput-wide v3, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deadline:J
+    iget-wide v3, v0, Lcom/screenshotclean/app/DeleteManager$Task;->total:J
+    add-long/2addr v3, p2
+    iput-wide v3, v0, Lcom/screenshotclean/app/DeleteManager$Task;->total:J
+    iget-object v5, p0, Lcom/screenshotclean/app/DeleteManager;->handler:Landroid/os/Handler;
+    iget-object v6, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deleteRunnable:Ljava/lang/Runnable;
+    invoke-virtual {v5, v6}, Landroid/os/Handler;->removeCallbacks(Ljava/lang/Runnable;)V
+    iget-wide v3, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deadline:J
+    sub-long v8, v3, v1
+    iget-object v5, p0, Lcom/screenshotclean/app/DeleteManager;->handler:Landroid/os/Handler;
+    iget-object v6, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deleteRunnable:Ljava/lang/Runnable;
+    invoke-virtual {v5, v6, v8, v9}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
+    iget-object v4, p0, Lcom/screenshotclean/app/DeleteManager;->notifier:Lcom/screenshotclean/app/Notifier;
+    iget-object v5, v0, Lcom/screenshotclean/app/DeleteManager$Task;->path:Ljava/lang/String;
+    iget-object v6, v0, Lcom/screenshotclean/app/DeleteManager$Task;->name:Ljava/lang/String;
+    iget-wide v7, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deadline:J
+    iget-wide v9, v0, Lcom/screenshotclean/app/DeleteManager$Task;->total:J
+    invoke-virtual/range {v4 .. v10}, Lcom/screenshotclean/app/Notifier;->showCountdown(Ljava/lang/String;Ljava/lang/String;JJ)V
+    new-instance v5, Ljava/lang/StringBuilder;
+    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
+    const-string v6, "\u5df2\u5ef6\u957f1\u5206\u949f\uff0c\u5269\u4f59 "
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    iget-wide v8, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deadline:J
+    sub-long v3, v8, v1
+    invoke-static {v3, v4}, Lcom/screenshotclean/app/Notifier;->format(J)Ljava/lang/String;
+    move-result-object v6
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v6
+    iget-object v7, p0, Lcom/screenshotclean/app/DeleteManager;->ctx:Landroid/content/Context;
+    const/4 v8, 0x0
+    invoke-static {v7, v6, v8}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
+    move-result-object v7
+    invoke-virtual {v7}, Landroid/widget/Toast;->show()V
+    :cond_ret
+    return-void
+.end method
+.method public deleteNow(Ljava/lang/String;)V
+    .locals 10
+    .param p1, "path"    # Ljava/lang/String;
+
     move-object/from16 v5, p0
-    if-eqz v1, :cond_64
-    iget-object v2, v5, Lcom/screenshotclean/app/DeleteManager;->notifier:Lcom/screenshotclean/app/Notifier;
-    move-object v3, v8
-    move-object v4, v9
-    invoke-virtual {v2, v3, v4}, Lcom/screenshotclean/app/Notifier;->showDeleted(Ljava/lang/String;Ljava/lang/String;)V
-    # v2.7: 已删除气泡
+
+    move-object/from16 v8, p1
+
+    iget-object v0, v5, Lcom/screenshotclean/app/DeleteManager;->tasks:Ljava/util/Map;
+
+    invoke-interface {v0, v8}, Ljava/util/Map;->get(Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Lcom/screenshotclean/app/DeleteManager$Task;
+
+    const-string v9, "\u622a\u56fe"
+
+    if-nez v0, :cond_0
+
+    goto :goto_0
+
+    :cond_0
+    iget-object v9, v0, Lcom/screenshotclean/app/DeleteManager$Task;->name:Ljava/lang/String;
+
+    iget-object v1, v5, Lcom/screenshotclean/app/DeleteManager;->handler:Landroid/os/Handler;
+
+    iget-object v2, v0, Lcom/screenshotclean/app/DeleteManager$Task;->deleteRunnable:Ljava/lang/Runnable;
+
+    invoke-virtual {v1, v2}, Landroid/os/Handler;->removeCallbacks(Ljava/lang/Runnable;)V
+
+    iget-object v1, v5, Lcom/screenshotclean/app/DeleteManager;->tasks:Ljava/util/Map;
+
+    invoke-interface {v1, v8}, Ljava/util/Map;->remove(Ljava/lang/Object;)Ljava/lang/Object;
+
+    iget-object v1, v5, Lcom/screenshotclean/app/DeleteManager;->tasks:Ljava/util/Map;
+
+    invoke-interface {v1}, Ljava/util/Map;->isEmpty()Z
+
+    move-result v1
+
+    if-eqz v1, :cond_1
+
+    iget-object v1, v5, Lcom/screenshotclean/app/DeleteManager;->handler:Landroid/os/Handler;
+
+    iget-object v2, v5, Lcom/screenshotclean/app/DeleteManager;->ticker:Ljava/lang/Runnable;
+
+    invoke-virtual {v1, v2}, Landroid/os/Handler;->removeCallbacks(Ljava/lang/Runnable;)V
+
+    :cond_1
+    :goto_0
+    const/4 v1, 0x0
+
+    :try_start_0
     iget-object v2, v5, Lcom/screenshotclean/app/DeleteManager;->ctx:Landroid/content/Context;
-    const-string v3, "已删除"
-    const/4 v4, 0x0
-    invoke-static {v2, v3, v4}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
+
+    invoke-virtual {v2}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
+
     move-result-object v2
-    invoke-virtual {v2}, Landroid/widget/Toast;->show()V
-    goto :goto_6d
-    :cond_64
-    iget-object v2, v5, Lcom/screenshotclean/app/DeleteManager;->notifier:Lcom/screenshotclean/app/Notifier;
-    move-object v3, v8
-    move-object v4, v9
-    invoke-virtual {v2, v3, v4}, Lcom/screenshotclean/app/Notifier;->showFailed(Ljava/lang/String;Ljava/lang/String;)V
-    # v2.7: 删除失败气泡
-    iget-object v2, v5, Lcom/screenshotclean/app/DeleteManager;->ctx:Landroid/content/Context;
-    const-string v3, "删除失败"
-    const/4 v4, 0x0
-    invoke-static {v2, v3, v4}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
-    move-result-object v2
-    invoke-virtual {v2}, Landroid/widget/Toast;->show()V
-    :goto_6d
-    # v2.7: 前一个任务完成 -> 启动排队中的任务
-    iget-object v1, p0, Lcom/screenshotclean/app/DeleteManager;->pendingPath:Ljava/lang/String;
-    if-eqz v1, :cond_nopending
-    iget-object v2, p0, Lcom/screenshotclean/app/DeleteManager;->pendingName:Ljava/lang/String;
-    iget-wide v3, p0, Lcom/screenshotclean/app/DeleteManager;->pendingDelay:J
+
+    sget-object v3, Landroid/provider/MediaStore$Images$Media;->EXTERNAL_CONTENT_URI:Landroid/net/Uri;
+
+    const-string v4, "_data=?"
+
+    const/4 v6, 0x1
+
+    new-array v6, v6, [Ljava/lang/String;
+
+    move-object v7, v8
+
     const/4 v6, 0x0
+
+    aput-object v7, v6, v6
+
+    invoke-virtual {v2, v3, v4, v6}, Landroid/content/ContentResolver;->delete(Landroid/net/Uri;Ljava/lang/String;[Ljava/lang/String;)I
+
+    move-result v2
+    :try_end_0
+    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
+
+    nop
+
+    const/4 v1, 0x1
+
+    goto :goto_1
+
+    :catch_0
+    move-exception v2
+
+    const/4 v1, 0x1
+
+    :goto_1
+    nop
+
+    :try_start_1
+    new-instance v2, Ljava/io/File;
+
+    move-object v3, v8
+
+    invoke-direct {v2, v3}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+
+    invoke-virtual {v2}, Ljava/io/File;->exists()Z
+
+    move-result v3
+
+    if-eqz v3, :cond_2
+
+    invoke-virtual {v2}, Ljava/io/File;->delete()Z
+
+    move-result v1
+    :try_end_1
+    .catch Ljava/lang/Exception; {:try_start_1 .. :try_end_1} :catch_1
+
+    goto :goto_2
+
+    :catch_1
+    move-exception v2
+
+    const/4 v1, 0x0
+
+    :cond_2
+    :goto_2
+    move-object/from16 v5, p0
+
+    if-eqz v1, :cond_3
+
+    iget-object v2, v5, Lcom/screenshotclean/app/DeleteManager;->notifier:Lcom/screenshotclean/app/Notifier;
+
+    move-object v3, v8
+
+    move-object v4, v9
+
+    invoke-virtual {v2, v3, v4}, Lcom/screenshotclean/app/Notifier;->showDeleted(Ljava/lang/String;Ljava/lang/String;)V
+
+    iget-object v2, v5, Lcom/screenshotclean/app/DeleteManager;->ctx:Landroid/content/Context;
+
+    const-string v3, "\u5df2\u5220\u9664"
+
+    const/4 v4, 0x0
+
+    invoke-static {v2, v3, v4}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
+
+    move-result-object v2
+
+    invoke-virtual {v2}, Landroid/widget/Toast;->show()V
+
+    goto :goto_3
+
+    :cond_3
+    iget-object v2, v5, Lcom/screenshotclean/app/DeleteManager;->notifier:Lcom/screenshotclean/app/Notifier;
+
+    move-object v3, v8
+
+    move-object v4, v9
+
+    invoke-virtual {v2, v3, v4}, Lcom/screenshotclean/app/Notifier;->showFailed(Ljava/lang/String;Ljava/lang/String;)V
+
+    iget-object v2, v5, Lcom/screenshotclean/app/DeleteManager;->ctx:Landroid/content/Context;
+
+    const-string v3, "\u5220\u9664\u5931\u8d25"
+
+    const/4 v4, 0x0
+
+    invoke-static {v2, v3, v4}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
+
+    move-result-object v2
+
+    invoke-virtual {v2}, Landroid/widget/Toast;->show()V
+
+    :goto_3
+    iget-object v1, p0, Lcom/screenshotclean/app/DeleteManager;->pendingPath:Ljava/lang/String;
+
+    if-eqz v1, :cond_4
+
+    iget-object v2, p0, Lcom/screenshotclean/app/DeleteManager;->pendingName:Ljava/lang/String;
+
+    iget-wide v3, p0, Lcom/screenshotclean/app/DeleteManager;->pendingDelay:J
+
+    const/4 v6, 0x0
+
     iput-object v6, p0, Lcom/screenshotclean/app/DeleteManager;->pendingPath:Ljava/lang/String;
+
     iput-object v6, p0, Lcom/screenshotclean/app/DeleteManager;->pendingName:Ljava/lang/String;
+
     invoke-virtual {p0, v1, v2, v3, v4}, Lcom/screenshotclean/app/DeleteManager;->schedule(Ljava/lang/String;Ljava/lang/String;J)V
-    :cond_nopending
+
+    :cond_4
     return-void
 .end method
 
 .method public notifier()Lcom/screenshotclean/app/Notifier;
-    .registers 2
+    .locals 1
 
     .line 84
     iget-object v0, p0, Lcom/screenshotclean/app/DeleteManager;->notifier:Lcom/screenshotclean/app/Notifier;
@@ -548,13 +702,13 @@
 .end method
 
 .method public schedule(Ljava/lang/String;Ljava/lang/String;J)V
-    .registers 16
+    .locals 11
     .param p1, "path"    # Ljava/lang/String;
     .param p2, "fileName"    # Ljava/lang/String;
     .param p3, "delayMs"    # J
 
     .line 93
-    if-eqz p1, :cond_4b
+    if-eqz p1, :cond_3
 
     iget-object v0, p0, Lcom/screenshotclean/app/DeleteManager;->tasks:Ljava/util/Map;
 
@@ -562,22 +716,29 @@
 
     move-result v0
 
-    if-eqz v0, :cond_b
+    if-eqz v0, :cond_0
 
-    goto :goto_4b
+    goto :goto_0
 
     .line 94
-    :cond_b
-    # v2.7 排队：已有活跃任务 → 暂存 pending，等前一个完成后启动
+    :cond_0
     iget-object v0, p0, Lcom/screenshotclean/app/DeleteManager;->tasks:Ljava/util/Map;
+
     invoke-interface {v0}, Ljava/util/Map;->isEmpty()Z
+
     move-result v0
-    if-nez v0, :cond_normal
+
+    if-nez v0, :cond_1
+
     iput-object p1, p0, Lcom/screenshotclean/app/DeleteManager;->pendingPath:Ljava/lang/String;
+
     iput-object p2, p0, Lcom/screenshotclean/app/DeleteManager;->pendingName:Ljava/lang/String;
+
     iput-wide p3, p0, Lcom/screenshotclean/app/DeleteManager;->pendingDelay:J
+
     return-void
-    :cond_normal
+
+    :cond_1
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
 
     move-result-wide v0
@@ -639,7 +800,7 @@
 
     const/4 v3, 0x1
 
-    if-ne v2, v3, :cond_4a
+    if-ne v2, v3, :cond_2
 
     .line 101
     iget-object v2, p0, Lcom/screenshotclean/app/DeleteManager;->handler:Landroid/os/Handler;
@@ -653,18 +814,18 @@
 
     iget-object v3, p0, Lcom/screenshotclean/app/DeleteManager;->ticker:Ljava/lang/Runnable;
 
-    const-wide/16 v4, 0x1388
+    const-wide/16 v4, 0x3e8
 
     invoke-virtual {v2, v3, v4, v5}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
 
     .line 104
-    :cond_4a
+    :cond_2
     return-void
 
     .line 93
     .end local v0    # "deadline":J
     .end local v9    # "t":Lcom/screenshotclean/app/DeleteManager$Task;
-    :cond_4b
-    :goto_4b
+    :cond_3
+    :goto_0
     return-void
 .end method

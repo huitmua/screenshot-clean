@@ -1,12 +1,13 @@
-# 截图自动清理 · 灵动岛倒计时版（v2.7）
-
-> 最新版本：**v2.7**（2026-08-15）｜基于 v1.4 注入方案扩展：在原有"切后台自动从最近任务栏消失"基础上，新增 **HyperOS 灵动岛倒计时** 全套功能。
+# 截图自动清理 · 灵动岛倒计时版（v2.8）
+> 最新版本：**v2.8**（2026-08-15）｜基于 v1.4 注入方案扩展：在原有"切后台自动从最近任务栏消失"基础上，新增 **HyperOS 灵动岛倒计时** 全套功能。
 > 适用设备：Redmi / 小米（HyperOS / MIUI，Android 15/16，水滴屏灵动岛）
 
 ---
-
 ## ✨ 特性总览
-
+### 🆕 v2.8 新增（加时 + 实时刷新）
+- ✅ **一键加时**：点击灵动岛中间播放键 = 倒计时 +1 分钟（可无限叠加，不受次数限制）
+- ✅ **加时气泡反馈**：Toast 提示「已延长1分钟，剩余 xx:xx」，所见即所得
+- ✅ **倒计时实时刷新**：顶部倒计时文字从 5 秒刷新改为每秒刷新，截图后立即进入倒计时，不再有"卡 5 秒"滞后
 ### 🆕 v2.7 新增（灵动岛倒计时）
 - ✅ **截图后自动进入删除倒计时**（默认 60 秒，可在应用内设置时长）
 - ✅ **HyperOS 灵动岛实时显示**（水滴屏位置，媒体岛样式）
@@ -29,28 +30,42 @@
 
 | 目录 | 文件 | 说明 |
 |---|---|---|
-| `01_成品APK/` | `app-v2.7-signed.apk` | **最新 v2.7 成品**（已注入+已签名，可直接安装） |
+| `01_成品APK/` | `app-v2.8-signed.apk` | **最新 v2.8 成品**（已注入+已签名，可直接安装） |
+| `01_成品APK/` | `app-v2.7-signed.apk` | 旧版 v2.7（对照/回退用） |
 | `01_成品APK/` | `app-v1.4-signed.apk` | 旧版 v1.4（仅任务栏隐藏，对照/回退用） |
 | `02_原版APK/` | `截图自动清理.apk` | 原始未修改版（恢复/对照用） |
 | `03_签名文件/` | `debug.keystore` | 签名证书（密码 `android`，别名 `androiddebugkey`） |
-| `04_注入源码/` | `Notifier.smali` | **v2.7**：倒计时通知 + MediaSession + 灵动岛三键 + 进度条 |
-| `04_注入源码/` | `DeleteManager.smali` | **v2.7**：删除任务管理 + 多截图排队 + Toast 气泡 |
-| `04_注入源码/` | `CountdownMediaCallback.smali` | **v2.7**：三键回调（下一首=删除 / 上一首=保留） |
+| `04_注入源码/` | `Notifier.smali` | **v2.8**：倒计时通知 + MediaSession + 灵动岛三键 + 进度条 + 播放键可点 |
+| `04_注入源码/` | `DeleteManager.smali` | **v2.8**：删除任务管理 + 排队 + Toast + **addTime 加时** |
+| `04_注入源码/` | `DeleteManager$1.smali` | **v2.8**：每秒刷新 ticker（顶部倒计时实时） |
+| `04_注入源码/` | `DeleteManager$Task.smali` | **v2.8**：任务实体（deadline/total 可改，支持加时） |
+| `04_注入源码/` | `CountdownMediaCallback.smali` | **v2.8**：三键回调（播放=加时 / 下一首=删除 / 上一首=保留） |
 | `04_注入源码/` | `MainActivity.smali` | v1.4：onStop + finishAndRemoveTask（任务栏隐藏） |
 | `04_注入源码/` | `MainActivity$$ExternalSyntheticLambda7.smali` | v1.4：延迟移除 Runnable |
-| `05_修改后dex/` | `classes2.dex` | **v2.7** 修改重编译后的 dex（可直替换） |
+| `05_修改后dex/` | `classes2.dex` | **v2.8** 修改重编译后的 dex（可直替换） |
 | `06_工具脚本/` | `restore_original.sh` | 恢复原版脚本 |
 | `04_构建脚本/` | `BuildDex.java` | dex 重编译工具（apktool + smali 重新打包） |
 
 ---
 
-## 🧩 v2.7 技术原理（灵动岛倒计时）
+## 🧩 v2.8 技术原理（加时 + 实时刷新）
+
+### 加时机制（addTime）
+- `DeleteManager.addTime(path, extraMs)`：将任务的 `deadline` 与 `total` 各加 extraMs（Task 字段已去 final），重排删除定时器，立即重画通知 + 刷新媒体岛
+- `Task.deadline` = 新的删除时刻；`Task.total` = 新的总时长（右侧数字 + 进度条分母自动变 2:00）
+- 点击播放键 → `onPlay()`/`onPause()` → `addTime(path, 60000)`，无限叠加
+- 加时后 Toast：**「已延长1分钟，剩余 xx:xx」**
+
+### 实时刷新机制
+- 刷新 ticker 从 **5 秒 → 1 秒**：顶部倒计时文字与通知进度条每秒重绘，截图后立即倒计时，不再有"卡 5 秒"滞后
+- 媒体岛进度条与递增数字由 SystemUI 实时推算（每秒），不受影响
 
 ### 媒体岛（Media Island）机制
 应用通过 **MediaSession + MediaStyle 通知** 伪装成"音乐播放器"，让 HyperOS 的媒体岛接管显示：
 - `MediaSession.setActive(true)` + `setPlaybackState()`（state=PLAYING, speed=1.0）
 - `setMetadata()` 注入标题（"倒计时 00:59"）、歌手（截图文件名）、时长（`METADATA_KEY_DURATION` = 设定秒数）
-- 三键按钮：**下一首**（ACTION_SKIP_TO_NEXT）= 立即删除、**上一首**（ACTION_SKIP_TO_PREVIOUS）= 保留取消
+- `setActions()` 包含 PLAY/PAUSE/SKIP 位（0x76），中间播放键可点击
+- 三键按钮：**播放**（ACTION_PLAY/PAUSE）= 加时 1 分钟、**下一首**（ACTION_SKIP_TO_NEXT）= 立即删除、**上一首**（ACTION_SKIP_TO_PREVIOUS）= 保留取消
 
 ### 进度条实时同步
 - 每秒调用 `updatePlaybackState(session, deadlineMs, totalMs)`：`position = totalMs - (deadlineMs - now)`（已播放时间）
@@ -68,7 +83,7 @@
 
 1. **进度条左右数字布局由 SystemUI 写死**：左侧 = 已播放时间（递增 0:00 → 设定时长），右侧 = 设定总时长（固定）。这是系统媒体岛的固定布局（与标准音乐播放器一致），**无法在应用侧交换左右**，请知悉。
 2. **必须使用小米/HyperOS 系统**：灵动岛（媒体岛）为 HyperOS 特性，其他 ROM（ColorOS/OriginOS 等）不会显示。
-3. **三键语义**：中间播放键为空缺；**下一曲 = 立即删除**，**上一曲 = 保留**（与原版两键方案语义一致）。
+3. **三键语义**：**播放键 = 加时 1 分钟**（无限叠加），**下一曲 = 立即删除**，**上一曲 = 保留**。加时后 Toast 显示「已延长1分钟，剩余 xx:xx」。
 4. **倒计时期间删除其他截图**：本倒计时只针对触发它的那张截图，不影响其他图片。
 5. **覆盖安装**：升级/覆盖安装必须使用**同一签名**（仓库内置 debug.keystore），否则需先卸载。
 6. **通知权限**：首次运行需允许通知权限（媒体通知需要通知权限才能显示在媒体岛）。

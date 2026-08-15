@@ -23,7 +23,7 @@
 
 # direct methods
 .method public static synthetic $r8$lambda$djgswijafJBvdIKieyNO2yL6wx4(Lcom/screenshotclean/app/Notifier;Ljava/lang/String;)V
-    .registers 2
+    .locals 0
 
     invoke-direct {p0, p1}, Lcom/screenshotclean/app/Notifier;->lambda$showDeleted$0(Ljava/lang/String;)V
 
@@ -31,7 +31,7 @@
 .end method
 
 .method public constructor <init>(Landroid/content/Context;)V
-    .registers 4
+    .locals 2
     .param p1, "c"    # Landroid/content/Context;
 
     .line 22
@@ -65,7 +65,7 @@
 .end method
 
 .method private ensureChannel()V
-    .registers 5
+    .locals 4
 
     .line 29
     new-instance v0, Landroid/app/NotificationChannel;
@@ -102,23 +102,30 @@
 .end method
 
 .method private ensureMediaSession()Landroid/media/session/MediaSession;
-    .registers 5
+    .locals 4
+
     sget-object v0, Lcom/screenshotclean/app/Notifier;->sMediaSession:Landroid/media/session/MediaSession;
-    if-nez v0, :cond_ret
+
+    if-nez v0, :cond_0
 
     move-object v3, p0
+
     new-instance v0, Landroid/media/session/MediaSession;
+
     iget-object v1, v3, Lcom/screenshotclean/app/Notifier;->ctx:Landroid/content/Context;
+
     const-string v2, "scc_countdown"
+
     invoke-direct {v0, v1, v2}, Landroid/media/session/MediaSession;-><init>(Landroid/content/Context;Ljava/lang/String;)V
+
     sput-object v0, Lcom/screenshotclean/app/Notifier;->sMediaSession:Landroid/media/session/MediaSession;
 
-:cond_ret
+    :cond_0
     return-object v0
 .end method
 
 .method public static format(J)Ljava/lang/String;
-    .registers 12
+    .locals 10
     .param p0, "totalSec"    # J
 
     .line 153
@@ -144,7 +151,7 @@
 
     cmp-long v6, v2, v6
 
-    if-lez v6, :cond_2a
+    if-lez v6, :cond_0
 
     sget-object v6, Ljava/util/Locale;->US:Ljava/util/Locale;
 
@@ -173,7 +180,7 @@
     return-object v6
 
     .line 157
-    :cond_2a
+    :cond_0
     sget-object v6, Ljava/util/Locale;->US:Ljava/util/Locale;
 
     invoke-static {v0, v1}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
@@ -198,7 +205,7 @@
 .end method
 
 .method public static idFor(Ljava/lang/String;)I
-    .registers 3
+    .locals 2
     .param p0, "path"    # Ljava/lang/String;
 
     .line 39
@@ -218,7 +225,7 @@
 .end method
 
 .method private synthetic lambda$showDeleted$0(Ljava/lang/String;)V
-    .registers 4
+    .locals 2
     .param p1, "path"    # Ljava/lang/String;
 
     .line 133
@@ -233,10 +240,51 @@
     return-void
 .end method
 
+.method private static updatePlaybackState(Landroid/media/session/MediaSession;JJ)V
+    .locals 9
+    .param p0, "session"    # Landroid/media/session/MediaSession;
+    .param p1, "deadlineMs"    # J
+    .param p3, "totalMs"    # J
+
+    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+
+    move-result-wide v0
+
+    sub-long v2, p1, v0
+
+    sub-long v2, p3, v2
+
+    new-instance v4, Landroid/media/session/PlaybackState$Builder;
+
+    invoke-direct {v4}, Landroid/media/session/PlaybackState$Builder;-><init>()V
+
+    const/4 v5, 0x3
+
+    const/high16 v6, 0x3f800000    # 1.0f
+
+    invoke-virtual {v4, v5, v2, v3, v6}, Landroid/media/session/PlaybackState$Builder;->setState(IJF)Landroid/media/session/PlaybackState$Builder;
+
+    move-result-object v4
+
+    const-wide/16 v6, 0x76
+
+    invoke-virtual {v4, v6, v7}, Landroid/media/session/PlaybackState$Builder;->setActions(J)Landroid/media/session/PlaybackState$Builder;
+
+    move-result-object v4
+
+    invoke-virtual {v4}, Landroid/media/session/PlaybackState$Builder;->build()Landroid/media/session/PlaybackState;
+
+    move-result-object v4
+
+    invoke-virtual {p0, v4}, Landroid/media/session/MediaSession;->setPlaybackState(Landroid/media/session/PlaybackState;)V
+
+    return-void
+.end method
+
 
 # virtual methods
 .method public cancel(Ljava/lang/String;)V
-    .registers 4
+    .locals 2
     .param p1, "path"    # Ljava/lang/String;
 
     .line 149
@@ -248,21 +296,21 @@
 
     invoke-virtual {v0, v1}, Landroid/app/NotificationManager;->cancel(I)V
 
-    sget-object v2, Lcom/screenshotclean/app/Notifier;->sMediaSession:Landroid/media/session/MediaSession;
+    sget-object p0, Lcom/screenshotclean/app/Notifier;->sMediaSession:Landroid/media/session/MediaSession;
 
-    if-eqz v2, :cond_skip
+    if-eqz p0, :cond_0
 
-    const/4 v3, 0x0
+    const/4 p1, 0x0
 
-    invoke-virtual {v2, v3}, Landroid/media/session/MediaSession;->setActive(Z)V
+    invoke-virtual {p0, p1}, Landroid/media/session/MediaSession;->setActive(Z)V
 
-    :cond_skip
     .line 150
+    :cond_0
     return-void
 .end method
 
 .method public serviceNotification()Landroid/app/Notification;
-    .registers 6
+    .locals 5
 
     .line 44
     new-instance v0, Landroid/content/Intent;
@@ -361,7 +409,7 @@
 .end method
 
 .method public showAggregate(IJLjava/lang/String;)V
-    .registers 14
+    .locals 9
     .param p1, "count"    # I
     .param p2, "soonestDeadlineMs"    # J
     .param p4, "firstName"    # Ljava/lang/String;
@@ -441,7 +489,7 @@
 
     .line 94
     .local v4, "text":Ljava/lang/String;
-    if-eqz p4, :cond_63
+    if-eqz p4, :cond_0
 
     new-instance v5, Ljava/lang/StringBuilder;
 
@@ -472,7 +520,7 @@
     move-result-object v4
 
     .line 96
-    :cond_63
+    :cond_0
     new-instance v5, Landroid/app/Notification$Builder;
 
     iget-object v6, p0, Lcom/screenshotclean/app/Notifier;->ctx:Landroid/content/Context;
@@ -594,7 +642,7 @@
 .end method
 
 .method public showCancelled(Ljava/lang/String;Ljava/lang/String;)V
-    .registers 7
+    .locals 4
     .param p1, "path"    # Ljava/lang/String;
     .param p2, "fileName"    # Ljava/lang/String;
 
@@ -700,7 +748,7 @@
 .end method
 
 .method public showCountdown(Ljava/lang/String;Ljava/lang/String;JJ)V
-    .registers 30
+    .locals 23
     .param p1, "path"    # Ljava/lang/String;
     .param p2, "fileName"    # Ljava/lang/String;
     .param p3, "deadlineMs"    # J
@@ -1022,14 +1070,11 @@
 
     invoke-virtual {v9, v7}, Landroid/app/Notification$Builder;->setCategory(Ljava/lang/String;)Landroid/app/Notification$Builder;
 
-
-
     move-result-object v9
-
 
     sget-object v7, Lcom/screenshotclean/app/Notifier;->sMediaSession:Landroid/media/session/MediaSession;
 
-    if-nez v7, :cond_ms
+    if-nez v7, :cond_0
 
     new-instance v7, Landroid/media/session/MediaSession;
 
@@ -1042,23 +1087,27 @@
     sput-object v7, Lcom/screenshotclean/app/Notifier;->sMediaSession:Landroid/media/session/MediaSession;
 
     iget-object v8, v0, Lcom/screenshotclean/app/Notifier;->ctx:Landroid/content/Context;
+
     new-instance v10, Lcom/screenshotclean/app/CountdownMediaCallback;
+
     invoke-direct {v10, v8}, Lcom/screenshotclean/app/CountdownMediaCallback;-><init>(Landroid/content/Context;)V
+
     invoke-virtual {v7, v10}, Landroid/media/session/MediaSession;->setCallback(Landroid/media/session/MediaSession$Callback;)V
-    :cond_ms
 
-
+    :cond_0
     move-object/from16 v15, p1
+
     sput-object v15, Lcom/screenshotclean/app/CountdownMediaCallback;->sPath:Ljava/lang/String;
+
     const/4 v8, 0x1
 
     invoke-virtual {v7, v8}, Landroid/media/session/MediaSession;->setActive(Z)V
-    # --- v2.6: 音乐岛模式（三键布局 + 进度条），更新 PlaybackState ---
-    # 重新加载 deadlineMs（v1-v2 在中间被 invoke 清除，必须从 p3 重取）
-    move-wide/from16 v1, p3
-    move-wide/from16 v5, p5
-    invoke-static {v7, v1, v2, v5, v6}, Lcom/screenshotclean/app/Notifier;->updatePlaybackState(Landroid/media/session/MediaSession;JJ)V
 
+    move-wide/from16 v1, p3
+
+    move-wide/from16 v5, p5
+
+    invoke-static {v7, v1, v2, v5, v6}, Lcom/screenshotclean/app/Notifier;->updatePlaybackState(Landroid/media/session/MediaSession;JJ)V
 
     new-instance v8, Landroid/media/MediaMetadata$Builder;
 
@@ -1134,18 +1183,28 @@
     move-result-object v9
 
     .line 84
-    # --- 注入 android.compactActions=[0,1] 让媒体岛显示通知按钮 ---
     iget-object v10, v9, Landroid/app/Notification;->extras:Landroid/os/Bundle;
+
     const-string v11, "android.compactActions"
+
     const/4 v12, 0x2
+
     new-array v12, v12, [I
+
     const/4 v13, 0x0
+
     const/4 v14, 0x0
+
     aput v14, v12, v13
+
     const/4 v13, 0x1
+
     const/4 v14, 0x1
+
     aput v14, v12, v13
+
     invoke-virtual {v10, v11, v12}, Landroid/os/Bundle;->putIntArray(Ljava/lang/String;[I)V
+
     iget-object v10, v0, Lcom/screenshotclean/app/Notifier;->nm:Landroid/app/NotificationManager;
 
     invoke-static/range {p1 .. p1}, Lcom/screenshotclean/app/Notifier;->idFor(Ljava/lang/String;)I
@@ -1159,7 +1218,7 @@
 .end method
 
 .method public showDeleted(Ljava/lang/String;Ljava/lang/String;)V
-    .registers 8
+    .locals 5
     .param p1, "path"    # Ljava/lang/String;
     .param p2, "fileName"    # Ljava/lang/String;
 
@@ -1282,7 +1341,7 @@
 .end method
 
 .method public showFailed(Ljava/lang/String;Ljava/lang/String;)V
-    .registers 7
+    .locals 4
     .param p1, "path"    # Ljava/lang/String;
     .param p2, "fileName"    # Ljava/lang/String;
 
@@ -1386,28 +1445,3 @@
     .line 146
     return-void
 .end method
-# v2.7: position = 已播放时间（total - 剩余），进度条音乐播放样式从空到满
-.method private static updatePlaybackState(Landroid/media/session/MediaSession;JJ)V
-    .registers 14
-    .param p0, "session"    # Landroid/media/session/MediaSession;
-    .param p1, "deadlineMs"    # J
-    .param p3, "totalMs"    # J
-    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
-    move-result-wide v0
-    sub-long v2, p1, v0
-    sub-long v2, p3, v2
-    new-instance v4, Landroid/media/session/PlaybackState$Builder;
-    invoke-direct {v4}, Landroid/media/session/PlaybackState$Builder;-><init>()V
-    const/4 v5, 0x3
-    const/high16 v6, 0x3f800000
-    invoke-virtual {v4, v5, v2, v3, v6}, Landroid/media/session/PlaybackState$Builder;->setState(IJF)Landroid/media/session/PlaybackState$Builder;
-    move-result-object v4
-    const-wide/16 v6, 0x30
-    invoke-virtual {v4, v6, v7}, Landroid/media/session/PlaybackState$Builder;->setActions(J)Landroid/media/session/PlaybackState$Builder;
-    move-result-object v4
-    invoke-virtual {v4}, Landroid/media/session/PlaybackState$Builder;->build()Landroid/media/session/PlaybackState;
-    move-result-object v4
-    invoke-virtual {p0, v4}, Landroid/media/session/MediaSession;->setPlaybackState(Landroid/media/session/PlaybackState;)V
-    return-void
-.end method
-
